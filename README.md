@@ -1,12 +1,7 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+🚀 Analisador de Currículo com IAEste projeto é uma aplicação web moderna construída com React e Vite, projetada para analisar currículos em formato PDF ou DOCX. A ferramenta extrai informações-chave do documento e as apresenta de forma resumida, ideal para otimizar o processo de triagem de recrutadores.✨ FuncionalidadesUpload Simples: Interface limpa para upload de arquivos .pdf e .docx.Análise com IA: Integração com uma API backend (https://analisador.zeronauta.com.br/analisar) para processar o currículo.Visualização Clara: Exibição organizada dos dados extraídos:Nome do CandidatoCargo DesejadoPalavras-chavePontos FortesSugestões para o RecrutadorFeedback Visual: Indicadores de carregamento durante a análise e modais de sucesso.Design Responsivo: Totalmente funcional em desktops e dispositivos móveis.🛠️ Tecnologias UtilizadasFrontend: ReactBuild Tool: ViteEstilização: TailwindCSSÍcones: Lucide ReactDeploy: Vercel⚙️ Como Executar o Projeto LocalmentePara rodar este projeto em sua máquina local, siga os passos abaixo.Pré-requisitosAntes de começar, você precisará ter o Node.js e o npm instalados em sua máquina.Instale o Node.js:Acesse o site oficial do Node.js.Baixe a versão LTS (Long Term Support), que é a mais estável e recomendada.Execute o instalador e siga as instruções, mantendo as opções padrão. O npm (Node Package Manager) é instalado automaticamente junto com o Node.js.Verifique a instalação (Opcional):Abra seu terminal e execute os seguintes comandos para confirmar que a instalação foi bem-sucedida:node -v
+npm -v
+Você deverá ver as versões do Node.js e do npm, respectivamente.InstalaçãoClone o repositório:git clone https://github.com/SEU-USUARIO/front-end-analisador-de-curriculo.git
+Navegue até a pasta do projeto:cd front-end-analisador-de-curriculo
+Instale as dependências:npm install
+ExecuçãoInicie o servidor de desenvolvimento:npm run dev
+Abra o navegador:Acesse http://localhost:5173 para ver a aplicação em funcionamento.📄 LicençaEste projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
