@@ -56,7 +56,7 @@ Antes de começar, você precisará ter o Node.js e o npm instalados em sua máq
 
 1.  **Clone o repositório:**
     ```bash
-    git clone [https://github.com/SEU-USUARIO/front-end-analisador-de-curriculo.git](https://github.com/SEU-USUARIO/front-end-analisador-de-curriculo.git)
+    git clone [https://github.com/DougPomp/front-end-analisador-de-curriculo.git](https://github.com/DougPomp/front-end-analisador-de-curriculo.git)
     ```
 
 2.  **Navegue até a pasta do projeto:**
