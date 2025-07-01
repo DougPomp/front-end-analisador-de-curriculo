@@ -242,7 +242,7 @@ export default function App() {
             )}
           </div>
           <p className="text-center mt-6 text-sm text-gray-500">
-            Desenvolvido com ❤️ por Gemini.
+            Desenvolvido com ❤️ por Zeronauta.
           </p>
         </div>
 
