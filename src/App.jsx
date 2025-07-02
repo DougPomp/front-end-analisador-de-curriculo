@@ -88,7 +88,7 @@ export default function App() {
 
     try {
       // Chamada real para a API do backend
-      const response = await fetch('/analisar-curriculo', {
+      const response = await fetch('https://analisador.zeronauta.com.br/analisar-curriculo', {
         method: 'POST',
         body: formData,
       });
