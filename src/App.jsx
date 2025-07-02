@@ -53,15 +53,28 @@ export default function App() {
   const [analysisResult, setAnalysisResult] = useState(null);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [theme, setTheme] = useState('light');
+  
+  // Lógica de tema melhorada para funcionar em qualquer ambiente
+  const [theme, setTheme] = useState(() => {
+    if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+      return localStorage.getItem('theme');
+    }
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+    return 'light';
+  });
+
   const fileInputRef = useRef(null);
 
   useEffect(() => {
+    const root = document.documentElement;
     if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
+      root.classList.add('dark');
     } else {
-      document.documentElement.classList.remove('dark');
+      root.classList.remove('dark');
     }
+    localStorage.setItem('theme', theme);
   }, [theme]);
 
   const toggleTheme = () => {
@@ -139,7 +152,7 @@ export default function App() {
           font-family: 'Inter', sans-serif; 
           background-color: #f3f4f6; /* bg-gray-100 */
         }
-        .dark body {
+        html.dark body {
           background-color: #111827; /* bg-gray-900 */
         }
       `}</style>
