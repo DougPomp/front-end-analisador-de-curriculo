@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { FileUp, CheckCircle, BrainCircuit, Star, Search, Lightbulb, X } from 'lucide-react';
+import { FileUp, CheckCircle, BrainCircuit, Star, Search, Lightbulb, X, User, Mail, Phone, Code, Briefcase } from 'lucide-react';
 
 // --- Componente de Modal de Sucesso ---
 const SuccessModal = ({ isOpen, onClose }) => {
@@ -31,6 +31,20 @@ const SectionIcon = ({ icon: Icon, colorClass }) => (
   </div>
 );
 
+// --- Componente de Item de Informação ---
+const InfoItem = ({ icon: Icon, label, value, colorClass }) => (
+    value && (
+        <div className="flex items-start p-4 bg-gray-50 rounded-lg">
+             <SectionIcon icon={Icon} colorClass={colorClass} />
+            <div>
+                <p className="text-sm font-semibold text-blue-600">{label}</p>
+                <p className="text-lg text-gray-800">{value}</p>
+            </div>
+        </div>
+    )
+);
+
+
 // --- Componente Principal da Aplicação ---
 export default function App() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -43,14 +57,14 @@ export default function App() {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    if (file && (file.type === "application/pdf" || file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
+    if (file && file.type === "application/pdf") {
       setSelectedFile(file);
       setFileName(file.name);
       setError(null);
     } else {
       setSelectedFile(null);
       setFileName('');
-      setError("Por favor, selecione um arquivo PDF ou DOCX.");
+      setError("Por favor, selecione um arquivo PDF.");
     }
   };
 
@@ -69,32 +83,24 @@ export default function App() {
     setAnalysisResult(null);
 
     const formData = new FormData();
-    formData.append('file', selectedFile);
+    // O backend espera o campo 'curriculo'
+    formData.append('curriculo', selectedFile);
 
     try {
-      // Simulação de chamada de API
-      // const response = await fetch('https://analisador.zeronauta.com.br/analisar', {
-      //   method: 'POST',
-      //   body: formData,
-      // });
+      // Chamada real para a API do backend
+      const response = await fetch('/analisar-curriculo', {
+        method: 'POST',
+        body: formData,
+      });
 
-      // if (!response.ok) {
-      //   throw new Error('Falha na análise do currículo. Tente novamente.');
-      // }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.erro || 'Falha na análise do currículo. Tente novamente.');
+      }
 
-      // const data = await response.json();
+      const data = await response.json();
 
-      // ** Usando dados mockados para demonstração, já que a API real pode não estar acessível **
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simula delay da rede
-      const mockData = {
-        candidateName: "João da Silva",
-        desiredRole: "Desenvolvedor Full-Stack Sênior",
-        keywords: ["React", "Node.js", "TypeScript", "AWS", "SQL", "Docker"],
-        strengths: "Vasta experiência em desenvolvimento de aplicações web escaláveis com React e Node.js. Sólidos conhecimentos em arquitetura de microsserviços e práticas DevOps.",
-        suggestionsForRecruiter: "Candidato com perfil técnico forte e alinhado com as tecnologias mais modernas do mercado. Recomenda-se focar a entrevista em desafios de arquitetura e escalabilidade."
-      };
-      
-      setAnalysisResult(mockData);
+      setAnalysisResult(data);
       setIsModalOpen(true);
 
     } catch (err) {
@@ -131,7 +137,7 @@ export default function App() {
               <div className="text-center">
                 <BrainCircuit className="mx-auto h-16 w-16 text-blue-500 mb-4" />
                 <h1 className="text-3xl md:text-4xl font-extrabold text-gray-800">Analisador de Currículo com IA</h1>
-                <p className="mt-3 text-lg text-gray-600">Envie seu PDF ou Word e receba um resumo automático para recrutadores.</p>
+                <p className="mt-3 text-lg text-gray-600">Envie seu PDF e receba um resumo automático para recrutadores.</p>
 
                 {/* Área de Upload */}
                 <div 
@@ -143,16 +149,16 @@ export default function App() {
                     ref={fileInputRef}
                     onChange={handleFileChange}
                     className="hidden"
-                    accept=".pdf,.docx"
+                    accept=".pdf" // Apenas PDF
                   />
                   <div className="flex flex-col items-center justify-center">
                     <FileUp className="h-12 w-12 text-gray-400 mb-4" />
                     {fileName ? (
-                       <p className="text-blue-600 font-semibold">{fileName}</p>
+                        <p className="text-blue-600 font-semibold">{fileName}</p>
                     ) : (
-                       <p className="text-gray-500">Clique para selecionar seu currículo</p>
+                        <p className="text-gray-500">Clique para selecionar seu currículo</p>
                     )}
-                    <p className="text-sm text-gray-400 mt-1">PDF ou DOCX</p>
+                    <p className="text-sm text-gray-400 mt-1">Apenas arquivos PDF</p>
                   </div>
                 </div>
 
@@ -188,48 +194,44 @@ export default function App() {
                 </div>
 
                 <div className="space-y-6">
-                  {/* Nome do Candidato */}
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <p className="text-sm font-semibold text-blue-600">Nome do Candidato</p>
-                    <p className="text-xl text-gray-800">{analysisResult.candidateName}</p>
-                  </div>
+                    {/* Informações do Candidato */}
+                    <InfoItem icon={User} label="Nome Completo" value={analysisResult.nome_completo} colorClass="text-blue-500 bg-blue-100" />
+                    <InfoItem icon={Mail} label="Email" value={analysisResult.email} colorClass="text-red-500 bg-red-100" />
+                    <InfoItem icon={Phone} label="Telefone" value={analysisResult.telefone} colorClass="text-green-500 bg-green-100" />
 
-                  {/* Cargo Desejado */}
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <p className="text-sm font-semibold text-blue-600">Cargo Desejado</p>
-                    <p className="text-xl text-gray-800">{analysisResult.desiredRole}</p>
-                  </div>
-                  
-                  {/* Palavras-chave */}
-                  <div className="flex items-start">
-                    <SectionIcon icon={Search} colorClass="text-purple-500 bg-purple-100" />
-                    <div>
-                        <h3 className="font-bold text-lg text-gray-800">Palavras-chave</h3>
-                        <div className="flex flex-wrap gap-2 mt-2">
-                            {analysisResult.keywords.map((keyword, index) => (
-                                <span key={index} className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">{keyword}</span>
-                            ))}
+                    {/* Habilidades Técnicas */}
+                    {analysisResult.habilidades_tecnicas && analysisResult.habilidades_tecnicas.length > 0 && (
+                        <div className="flex items-start">
+                            <SectionIcon icon={Code} colorClass="text-purple-500 bg-purple-100" />
+                            <div>
+                                <h3 className="font-bold text-lg text-gray-800">Habilidades Técnicas</h3>
+                                <div className="flex flex-wrap gap-2 mt-2">
+                                    {analysisResult.habilidades_tecnicas.map((skill, index) => (
+                                        <span key={index} className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">{skill}</span>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                  </div>
-                  
-                  {/* Pontos Fortes */}
-                  <div className="flex items-start">
-                    <SectionIcon icon={Star} colorClass="text-yellow-500 bg-yellow-100" />
-                    <div>
-                        <h3 className="font-bold text-lg text-gray-800">Pontos Fortes</h3>
-                        <p className="text-gray-600 mt-1">{analysisResult.strengths}</p>
-                    </div>
-                  </div>
-
-                  {/* Sugestões */}
-                  <div className="flex items-start">
-                    <SectionIcon icon={Lightbulb} colorClass="text-green-500 bg-green-100" />
-                    <div>
-                        <h3 className="font-bold text-lg text-gray-800">Sugestões para o Recrutador</h3>
-                        <p className="text-gray-600 mt-1">{analysisResult.suggestionsForRecruiter}</p>
-                    </div>
-                  </div>
+                    )}
+                    
+                    {/* Experiência Profissional */}
+                    {analysisResult.experiencia_profissional && analysisResult.experiencia_profissional.length > 0 && (
+                        <div className="flex items-start">
+                             <SectionIcon icon={Briefcase} colorClass="text-yellow-500 bg-yellow-100" />
+                            <div>
+                                <h3 className="font-bold text-lg text-gray-800">Experiência Profissional</h3>
+                                <div className="space-y-4 mt-2">
+                                    {analysisResult.experiencia_profissional.map((exp, index) => (
+                                        <div key={index} className="p-3 bg-gray-50 rounded-lg">
+                                            <p className="font-semibold text-gray-800">{exp.cargo}</p>
+                                            <p className="text-gray-600">{exp.empresa}</p>
+                                            <p className="text-sm text-gray-500">{exp.periodo}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
                 
                 <button 
