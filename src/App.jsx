@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { FileUp, CheckCircle, BrainCircuit, Star, Search, Lightbulb, X, User, Mail, Phone, Code, Briefcase } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { FileUp, CheckCircle, BrainCircuit, X, User, Mail, Phone, Code, Briefcase, Sun, Moon } from 'lucide-react';
 
 // --- Componente de Modal de Sucesso ---
 const SuccessModal = ({ isOpen, onClose }) => {
@@ -7,12 +7,12 @@ const SuccessModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg shadow-2xl p-8 max-w-sm w-full text-center transform transition-all duration-300 scale-100">
-        <div className="mx-auto bg-green-100 rounded-full h-16 w-16 flex items-center justify-center">
-          <CheckCircle className="h-10 w-10 text-green-500" />
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-8 max-w-sm w-full text-center transform transition-all duration-300 scale-100">
+        <div className="mx-auto bg-green-100 dark:bg-green-900/50 rounded-full h-16 w-16 flex items-center justify-center">
+          <CheckCircle className="h-10 w-10 text-green-500 dark:text-green-400" />
         </div>
-        <h3 className="text-2xl font-bold text-gray-800 mt-6">Sucesso!</h3>
-        <p className="text-gray-600 mt-2">Seu currículo foi analisado com sucesso.</p>
+        <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mt-6">Sucesso!</h3>
+        <p className="text-gray-600 dark:text-gray-300 mt-2">O seu currículo foi analisado com sucesso.</p>
         <button
           onClick={onClose}
           className="mt-6 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-400"
@@ -34,11 +34,11 @@ const SectionIcon = ({ icon: Icon, colorClass }) => (
 // --- Componente de Item de Informação ---
 const InfoItem = ({ icon: Icon, label, value, colorClass }) => (
     value && (
-        <div className="flex items-start p-4 bg-gray-50 rounded-lg">
+        <div className="flex items-start p-4 bg-gray-100 dark:bg-gray-700/50 rounded-lg">
              <SectionIcon icon={Icon} colorClass={colorClass} />
             <div>
-                <p className="text-sm font-semibold text-blue-600">{label}</p>
-                <p className="text-lg text-gray-800">{value}</p>
+                <p className="text-sm font-semibold text-blue-600 dark:text-blue-400">{label}</p>
+                <p className="text-lg text-gray-800 dark:text-gray-200">{value}</p>
             </div>
         </div>
     )
@@ -53,7 +53,20 @@ export default function App() {
   const [analysisResult, setAnalysisResult] = useState(null);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [theme, setTheme] = useState('light');
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
+  };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -64,7 +77,7 @@ export default function App() {
     } else {
       setSelectedFile(null);
       setFileName('');
-      setError("Por favor, selecione um arquivo PDF.");
+      setError("Por favor, selecione um ficheiro PDF.");
     }
   };
 
@@ -74,7 +87,7 @@ export default function App() {
 
   const handleSubmit = async () => {
     if (!selectedFile) {
-      setError("Nenhum arquivo selecionado. Por favor, escolha um currículo.");
+      setError("Nenhum ficheiro selecionado. Por favor, escolha um currículo.");
       return;
     }
 
@@ -83,11 +96,9 @@ export default function App() {
     setAnalysisResult(null);
 
     const formData = new FormData();
-    // O backend espera o campo 'curriculo'
     formData.append('curriculo', selectedFile);
 
     try {
-      // Chamada real para a API do backend
       const response = await fetch('https://analisador.zeronauta.com.br/analisar-curriculo', {
         method: 'POST',
         body: formData,
@@ -99,7 +110,6 @@ export default function App() {
       }
 
       const data = await response.json();
-
       setAnalysisResult(data);
       setIsModalOpen(true);
 
@@ -125,46 +135,48 @@ export default function App() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        body { 
+          font-family: 'Inter', sans-serif; 
+          background-color: #f3f4f6; /* bg-gray-100 */
+        }
+        .dark body {
+          background-color: #111827; /* bg-gray-900 */
+        }
       `}</style>
-      <div className="bg-gray-100 min-h-screen w-full flex flex-col items-center justify-center p-4 transition-all duration-500">
+      <div className="bg-gray-100 dark:bg-gray-900 min-h-screen w-full flex flex-col items-center justify-center p-4 transition-colors duration-500">
         
-        {/* Card Principal */}
         <div className="w-full max-w-2xl">
-          <div className="bg-white rounded-2xl shadow-xl p-8 transition-all duration-500">
-            {!analysisResult ? (
-              // --- Tela de Upload ---
-              <div className="text-center">
-                <BrainCircuit className="mx-auto h-16 w-16 text-blue-500 mb-4" />
-                <h1 className="text-3xl md:text-4xl font-extrabold text-gray-800">Analisador de Currículo com IA</h1>
-                <p className="mt-3 text-lg text-gray-600">Envie seu PDF e receba um resumo automático para recrutadores.</p>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 transition-colors duration-500 relative">
+            
+            {/* Theme Toggle Button */}
+            <button onClick={toggleTheme} className="absolute top-4 right-4 p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+              {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+            </button>
 
-                {/* Área de Upload */}
+            {!analysisResult ? (
+              <div className="text-center">
+                <BrainCircuit className="mx-auto h-16 w-16 text-blue-500" />
+                <h1 className="text-3xl md:text-4xl font-extrabold text-gray-800 dark:text-gray-100">Analisador de Currículo com IA</h1>
+                <p className="mt-3 text-lg text-gray-600 dark:text-gray-300">Envie o seu PDF e receba um resumo automático para recrutadores.</p>
+
                 <div 
-                  className="mt-8 border-2 border-dashed border-gray-300 rounded-lg p-8 cursor-pointer hover:border-blue-500 hover:bg-gray-50 transition-all duration-300"
+                  className="mt-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 cursor-pointer hover:border-blue-500 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-300"
                   onClick={handleFileClick}
                 >
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    className="hidden"
-                    accept=".pdf" // Apenas PDF
-                  />
+                  <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept=".pdf" />
                   <div className="flex flex-col items-center justify-center">
-                    <FileUp className="h-12 w-12 text-gray-400 mb-4" />
+                    <FileUp className="h-12 w-12 text-gray-400 dark:text-gray-500 mb-4" />
                     {fileName ? (
-                        <p className="text-blue-600 font-semibold">{fileName}</p>
+                        <p className="text-blue-600 dark:text-blue-400 font-semibold">{fileName}</p>
                     ) : (
-                        <p className="text-gray-500">Clique para selecionar seu currículo</p>
+                        <p className="text-gray-500 dark:text-gray-400">Clique para selecionar o seu currículo</p>
                     )}
-                    <p className="text-sm text-gray-400 mt-1">Apenas arquivos PDF</p>
+                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Apenas ficheiros PDF</p>
                   </div>
                 </div>
 
                 {error && <p className="mt-4 text-red-500 font-medium">{error}</p>}
 
-                {/* Botão de Envio */}
                 <button
                   onClick={handleSubmit}
                   disabled={isLoading || !selectedFile}
@@ -176,56 +188,50 @@ export default function App() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Analisando...
+                      A analisar...
                     </>
-                  ) : (
-                    "Enviar Currículo"
-                  )}
+                  ) : ( "Enviar Currículo" )}
                 </button>
               </div>
             ) : (
-              // --- Tela de Resultados ---
               <div>
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Resultado da Análise</h2>
-                    <button onClick={resetState} className="text-gray-500 hover:text-gray-800 transition-colors">
+                <div className="flex justify-between items-start mb-6">
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">Resultado da Análise</h2>
+                    <button onClick={resetState} className="text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors ml-4">
                         <X size={24} />
                     </button>
                 </div>
 
                 <div className="space-y-6">
-                    {/* Informações do Candidato */}
-                    <InfoItem icon={User} label="Nome Completo" value={analysisResult.nome_completo} colorClass="text-blue-500 bg-blue-100" />
-                    <InfoItem icon={Mail} label="Email" value={analysisResult.email} colorClass="text-red-500 bg-red-100" />
-                    <InfoItem icon={Phone} label="Telefone" value={analysisResult.telefone} colorClass="text-green-500 bg-green-100" />
+                    <InfoItem icon={User} label="Nome Completo" value={analysisResult.nome_completo} colorClass="text-blue-500 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/50" />
+                    <InfoItem icon={Mail} label="Email" value={analysisResult.email} colorClass="text-red-500 bg-red-100 dark:text-red-400 dark:bg-red-900/50" />
+                    <InfoItem icon={Phone} label="Telefone" value={analysisResult.telefone} colorClass="text-green-500 bg-green-100 dark:text-green-400 dark:bg-green-900/50" />
 
-                    {/* Habilidades Técnicas */}
                     {analysisResult.habilidades_tecnicas && analysisResult.habilidades_tecnicas.length > 0 && (
                         <div className="flex items-start">
-                            <SectionIcon icon={Code} colorClass="text-purple-500 bg-purple-100" />
+                            <SectionIcon icon={Code} colorClass="text-purple-500 bg-purple-100 dark:text-purple-400 dark:bg-purple-900/50" />
                             <div>
-                                <h3 className="font-bold text-lg text-gray-800">Habilidades Técnicas</h3>
+                                <h3 className="font-bold text-lg text-gray-800 dark:text-gray-100">Habilidades Técnicas</h3>
                                 <div className="flex flex-wrap gap-2 mt-2">
                                     {analysisResult.habilidades_tecnicas.map((skill, index) => (
-                                        <span key={index} className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">{skill}</span>
+                                        <span key={index} className="bg-blue-100 text-blue-800 dark:bg-blue-900/80 dark:text-blue-300 text-sm font-medium px-3 py-1 rounded-full">{skill}</span>
                                     ))}
                                 </div>
                             </div>
                         </div>
                     )}
                     
-                    {/* Experiência Profissional */}
                     {analysisResult.experiencia_profissional && analysisResult.experiencia_profissional.length > 0 && (
                         <div className="flex items-start">
-                             <SectionIcon icon={Briefcase} colorClass="text-yellow-500 bg-yellow-100" />
+                             <SectionIcon icon={Briefcase} colorClass="text-yellow-500 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/50" />
                             <div>
-                                <h3 className="font-bold text-lg text-gray-800">Experiência Profissional</h3>
+                                <h3 className="font-bold text-lg text-gray-800 dark:text-gray-100">Experiência Profissional</h3>
                                 <div className="space-y-4 mt-2">
                                     {analysisResult.experiencia_profissional.map((exp, index) => (
-                                        <div key={index} className="p-3 bg-gray-50 rounded-lg">
-                                            <p className="font-semibold text-gray-800">{exp.cargo}</p>
-                                            <p className="text-gray-600">{exp.empresa}</p>
-                                            <p className="text-sm text-gray-500">{exp.periodo}</p>
+                                        <div key={index} className="p-3 bg-gray-100 dark:bg-gray-700/50 rounded-lg">
+                                            <p className="font-semibold text-gray-800 dark:text-gray-200">{exp.cargo}</p>
+                                            <p className="text-gray-600 dark:text-gray-400">{exp.empresa}</p>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">{exp.periodo}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -243,12 +249,11 @@ export default function App() {
               </div>
             )}
           </div>
-          <p className="text-center mt-6 text-sm text-gray-500">
-            Desenvolvido com ❤️ por Zeronauta.
+          <p className="text-center mt-6 text-sm text-gray-500 dark:text-gray-400">
+            Desenvolvido com ❤️ pela Zeronauta.
           </p>
         </div>
 
-        {/* Modal */}
         <SuccessModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </div>
     </>
